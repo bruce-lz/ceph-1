@@ -1690,6 +1690,7 @@ OSD::OSD(CephContext *cct_, ObjectStore *store_,
   last_pg_create_epoch(0),
   mon_report_lock("OSD::mon_report_lock"),
   stats_ack_timeout(cct->_conf->osd_mon_ack_timeout),
+  send_boot_count(0),
   up_thru_wanted(0),
   requested_full_first(0),
   requested_full_last(0),
@@ -4348,7 +4349,12 @@ void OSD::tick()
   if (is_waiting_for_healthy()) {
     start_boot();
   }
-
+  if (is_booting()) {
+    if (send_boot_count++ >= 15) {
+      start_boot();
+      send_boot_count = 0;
+    }
+  }
   if (is_active()) {
     check_replay_queue();
   }

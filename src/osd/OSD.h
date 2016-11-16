@@ -2142,6 +2142,7 @@ protected:
   void start_waiting_for_healthy();
   bool _is_healthy();
   
+  int send_boot_count;
   friend struct C_OSD_GetVersion;
 
   // -- alive --
